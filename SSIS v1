@@ -1,0 +1,322 @@
+import operator
+import csv
+students_list = []
+course_list = ["unenrolled"]
+sorting_list = []
+output_list = []
+
+class Student: #Student object
+    def __init__(self, name, ID, course, courseid):
+        self.name = name
+        self.ID = ID
+        self.course = course
+        self.courseid = courseid
+
+    def __repr__(self):
+        return str(self.name) + ' | ' + str(self.ID) + ' | ' + str(course_list[self.courseid-1])
+
+def choice_of_action():
+    while True:
+        choice_action = str(input("What would you like to do?\n1-Add Student.\n2-Add Course\n3-Delete Course.\n4-Delete student.\n5-Edit a student.\n6-Search a student.\n7-List of students.\n8-List of Courses.\n:"))
+        if choice_action == '1':  # Add student
+            Add_student()
+            break
+        if choice_action == '2':  # Add Course
+            Add_course()
+            break
+        if choice_action == '3':  # Delete Course
+            Delete_course()
+            break
+        if choice_action == '4':  # Delete Student
+            Delete_student()
+            break
+        if choice_action == '5':  # Edit a student
+            Edit_student()
+            break
+        if choice_action == '6':  # Search a student
+            Search_student()
+            break
+        if choice_action == '7':  # List of students
+            List_student()
+            break
+        if choice_action == '8':  # List of Courses
+            List_courses()
+            break
+        else:
+            print("Please choose a number in the choices(1 to 8)")
+
+def List_courses():
+    i = 0
+    print("\nList of Courses:")
+    for i in range(len(course_list)):
+        i1 = i + 1
+        print(str(i1) + "-" + course_list[i])
+
+def List_students(version):
+    print("List of Students:( Name | ID-Number | Course ):")
+    if version == 1:
+        i2 = 0
+        for i in students_list:
+            i2 = i2 + 1
+            print(str(i2) + "- " + i.name + " | " + str(i.ID) + " | " + course_list[i.courseid - 1])
+    else:
+        for i in students_list:
+            print(i.name + " | " + str(i.ID) + " | " + course_list[i.courseid - 1])
+
+def Add_student(): #add filters for choosing course
+    if len(course_list) == 0:
+        print("You need an available course to add a student.")
+        Want_Add_Course()
+    else:
+        print("You will give the name, ID number, and course of the student.")
+        Name = str(input("Input the name in (Surname Firstname Middlename) format:"))
+        ID_number = str(input("Input the ID number in (yyyy abcd) format:"))
+
+        while True:
+            List_courses()
+            courseid = int(input("Choose among the courses:")) #confirm if string is a number then convert into int
+            course = str(course_list[int(courseid-1)])
+            if courseid <= len(course_list):
+                student = Student(Name.upper(), ID_number, course.upper(), courseid)
+                students_list.append(student)
+                print("Student " + Name.upper() + " with ID number " + ID_number + " of " + course.upper() + " has been successfully added.")
+                break
+            else:
+                print("Please choose a course number among the choices (1 to " + str(len(course_list)) + ")")
+
+def Add_course():
+    new_course = input("Give the name of the new course: ")
+    course_list.append(new_course)
+    print("The course " + new_course + " has been successfully added.\n")
+    List_courses()
+
+def Delete_course(): #delete students under deleted course
+    if len(course_list) > 0:
+        confirm = str(input("Deleting a course will move all the students under it to unenrolled, are you sure?\n1-yes\n2-no\n:"))
+        if confirm == '1':
+            List_courses()
+            while True:
+                chosen = int(input("\nChoose a course to delete:"))
+                if 0 < chosen <= len(course_list):
+                    i2 = chosen - 1
+                    for i in students_list:
+                        if course_list[i.courseid-1] == course_list[i2]:
+                            i.courseid = 0
+
+                    print("Course " + course_list[i2] + " has been successfully removed.")
+                    course_list.pop(i2)
+                    List_courses()
+                    ver = 0
+                    List_students(ver)
+                    break
+                else:
+                    print("Please choose among the choices only\n")
+                    List_courses()
+        elif confirm == '2':
+            return
+        else:
+            print("Please choose a number in the choices (1 or 2)\n")
+    else:
+        Want_Add_Course()
+def Want_Add_Course():
+    print("There are no courses available for now, please add one first.\n")
+    while True:
+        addcoursenow = int(input("Do you want to add a course?\n1-Yes\n2-No\n:"))
+        if addcoursenow == 1:
+            Add_course()
+            break
+        if addcoursenow == 2:
+            break
+
+        else:
+            print("Please choose a number in the choices (1 or 2)\n")
+
+def sorted_list(bywhat):
+    if bywhat == '1':
+        print("List of names in alphabetical order: ")
+        sorting_list = sorted(students_list, key=operator.attrgetter('name', 'ID', 'course'))
+        for i in sorting_list:
+            print(i)
+
+    elif bywhat == '2':
+        print("List of ID numbers in ascending order: ")
+        sorting_list = sorted(students_list, key=operator.attrgetter('ID', 'name', 'course'))
+        for i in sorting_list:
+            print(i)
+
+    elif bywhat == '3':
+        print("List of courses in alphabetical order: ")
+        sorting_list = sorted(students_list, key=operator.attrgetter('course', 'name', 'ID'))
+        for i in sorting_list:
+            print(i)
+
+def rev_sorted_list(bywhat):
+    if bywhat == '1':
+        print("List of names in reverse alphabetical order: ")
+        sorting_list = sorted(students_list, reverse=True, key=operator.attrgetter('name', 'ID', 'course'))
+        for i in sorting_list:
+            print(i)
+
+    elif bywhat == '2':
+        print("List of ID numbers in descending order: ")
+        sorting_list = sorted(students_list, reverse=True, key=operator.attrgetter('ID', 'name', 'course'))
+        for i in sorting_list:
+            print(i)
+
+    elif bywhat == '3':
+        print("List of courses in reverse alphabetical order: ")
+        sorting_list = sorted(students_list, reverse=True, key=operator.attrgetter('course', 'name', 'ID'))
+        for i in sorting_list:
+            print(i)
+
+def Delete_student():
+    if len(students_list) > 0:
+        ver = 1
+        List_students(ver)
+        while True:
+            chosen = int(input("\nChoose a student to delete:"))
+            if(chosen<=len(students_list)):
+                ver = 0
+                i3 = 0
+                i = chosen-1
+                for i2 in students_list:
+                    if i3 == i:
+                        grab_name = i2.name
+                        break
+                    i3 += 1
+                print("Student " + grab_name + " has been successfully removed.\n")
+                del students_list[i]
+                List_students(ver)
+                break
+            else:
+                ver=0
+                print("Please choose among the choices(1 to " + str(len(students_list)) + ")\n")
+                List_students(ver)
+    else:
+        print("There are no students available to delete.")
+
+def Edit_student(): #add filters for name id and course
+    ver=1
+    i3=0
+    List_students(ver)
+    chosen = int(input("\nChoose a student to edit:"))
+    i = chosen - 1
+    for i2 in students_list:
+        if i3 == i:
+            grab_name = str(i2.name)
+            grab_ID_number = str(i2.ID)
+            grab_course = str(course_list[i2.courseid-1])
+            grab_courseid = int(i2.courseid)
+        i3 += 1
+    print("You have chosen " + grab_name + ", " + grab_ID_number + " of " + grab_course + ".")
+
+    while True:
+        choice = str(input("What do you wish to edit?\n1-Name\n2-ID number\n3-course\n:"))
+        if choice == '1':
+            Name = input("Please enter the new name of (" + grab_name + "): ")
+            ID_number = str(grab_ID_number)
+            course = str(grab_course)
+            courseid = int(grab_courseid)
+
+            del students_list[i]
+            student = Student(Name.upper(), ID_number, course.upper(), courseid)
+            students_list.append(student)
+
+            print("Successfully changed the name of: " + grab_name + " into " + Name.upper() + ".")
+            break
+
+        elif choice == '2':
+            Name = str(grab_name)
+            ID_number = input("Please enter the new ID number of (" + grab_name + "):")
+            course = str(grab_course)
+            courseid = int(grab_courseid)
+
+            del students_list[i]
+            student = Student(Name.upper(), ID_number, course.upper(), courseid)
+            students_list.append(student)
+
+            print("Successfully changed the ID number of: " + grab_name + " from " + grab_ID_number + " to " + ID_number + ".")
+            break
+
+        elif choice == '3':
+            Name = str(grab_name)
+            ID_number = str(grab_ID_number)
+            List_courses()
+            courseid = int(input("Please enter the new course of (" + grab_name + "): "))
+            course = str(course_list[int(courseid - 1)])
+
+            del students_list[i]
+            student = Student(Name.upper(), ID_number, course.upper(), courseid)
+            students_list.append(student)
+
+            print("Successfully changed the course of: " + grab_name + " from " + grab_course + " to " + course + ".")
+            break
+
+        else:
+            print("Please choose among the choices. (1, 2, or 3)")
+
+
+def Search_student():
+    search = str(input("Who are you looking for?"))
+    for i in students_list:
+        if i.name == search.upper():
+            print(i.name + " " + i.ID)
+            return
+        elif i.ID == search.upper():
+            print(i.name + " " + i.ID)
+            return
+    print("Sorry the student is not in the system.")
+
+
+def List_student():
+    while True:
+        SortedOrNot = str(input("\nDo you want the List sorted or not?\n1-Yes\n2-No\n:"))
+        if SortedOrNot == '1':
+            while True:
+                ByWhat = str(input("\nHow do you want it to be sorted? By: \n1-Name\n2-ID-number\n3-course\n:"))
+                if ByWhat == '1' or ByWhat == '2' or ByWhat == '3':
+                    while True:
+                        AscOrDes = str(input("Do you want it... \n1-ascending\n2-descending\n:"))
+                        if AscOrDes == '1':
+                            sorted_list(ByWhat)
+                            break
+                        elif AscOrDes == '2':
+                            rev_sorted_list(ByWhat)
+                            break
+                        else:
+                            print("\nPlease choose a number among the choices(1 or 2)")
+                    break
+                else:
+                    print("\nPlease choose a number among the choices(1, 2 or 3)")
+            break
+        elif SortedOrNot == '2':
+            ver = 0
+            List_students(ver)
+            break
+        else:
+            print("Please choose a number among the choices(1 or 2)")
+
+# Start Of Main Function
+print("Simple Student Information System\n")  # Greetings
+
+choice_of_action()  # Choice Function
+
+# Another Action
+while True:
+    choice_repeat = str(input("\nWould you like to do another action?\n1-Yes\n2-No\n:"))
+    if choice_repeat == '1':
+        choice_of_action()
+    elif choice_repeat =='2':
+        break
+    else:
+        print("Please choose a number in the choices(1 or 2)")
+
+for i in students_list:
+    compiled = str(i.name + " | " + str(i.ID) + " | " + course_list[i.courseid - 1])
+    output_list.append(compiled)
+
+file_path = r'C:\Users\doniah\Desktop\SSIS Pineda Output.csv'
+with open(file_path, 'w', newline='') as csvfile:
+    for i in output_list:
+        csv_line = ' '.join(str(element) for element in i)
+        csvfile.write(csv_line + '\n')
