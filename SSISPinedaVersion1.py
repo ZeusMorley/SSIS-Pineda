@@ -215,7 +215,7 @@ def Edit_student():
             grab_name = str(i2.name)
             grab_ID_number = str(i2.ID)
             grab_course = str(course_list[i2.courseid])
-            grab_courseid = int(i2.courseid+1)
+            grab_courseid = int(i2.courseid)
         i3 += 1
     print("You have chosen " + grab_name + ", " + grab_ID_number + " of " + grab_course + ".")
 
